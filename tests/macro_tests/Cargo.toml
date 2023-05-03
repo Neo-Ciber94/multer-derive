@@ -1,0 +1,10 @@
+[package]
+name = "macro_tests"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+
+[dev-dependencies]
+multer-derive = { path = "../../multer-derive" }
+trybuild = { version = "1.0.80", features = ["diff"] }

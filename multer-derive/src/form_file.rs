@@ -1,4 +1,6 @@
-use crate::{error::Error, from_multipart_field::FromMultipartField, multipart_form::MultipartField, MultipartForm};
+use crate::{
+    error::Error, from_multipart_field::FromMultipartField, multipart_form::MultipartField,
+};
 use http::HeaderMap;
 use mime::Mime;
 use multer::bytes::Bytes;
@@ -41,7 +43,7 @@ impl FormFile {
 }
 
 impl FromMultipartField for FormFile {
-    fn from_field(field: &MultipartField, _form: &MultipartForm) -> Result<Self, Error> {
+    fn from_field(field: &MultipartField) -> Result<Self, Error> {
         let name = field
             .name()
             .ok_or_else(|| Error::new("field does not have a name"))?

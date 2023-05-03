@@ -17,7 +17,7 @@ async fn person_from_multipart_test() {
     let multipart = Multipart::with_reader(reader, "boundary_string");
 
     let form = MultipartForm::with_multipart(multipart).await.unwrap();
-    let person = Person::from_multipart(form).unwrap();
+    let person = Person::from_multipart(&form, Default::default()).unwrap();
 
     assert_eq!(person.name, "John Smith");
     assert_eq!(person.email, "john@example.com");

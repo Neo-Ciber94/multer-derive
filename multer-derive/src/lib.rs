@@ -1,5 +1,4 @@
 #[doc = include_str!("../../README.md")]
-
 mod error;
 pub use error::Error;
 
@@ -10,7 +9,7 @@ mod form_file;
 pub use form_file::FormFile;
 
 mod from_multipart;
-pub use from_multipart::FromMultipart;
+pub use from_multipart::{FormContext, FromMultipart};
 
 mod from_multipart_field;
 pub use from_multipart_field::FromMultipartField;

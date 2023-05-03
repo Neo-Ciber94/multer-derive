@@ -45,33 +45,35 @@ pub fn derive_from_multipart(input: DeriveInput) -> syn::Result<TokenStream> {
         let field_ty = f.ty;
         let parser = match attr.and_then(|s| s.with) {
             Some(with) => {
-                let path = match syn::parse_str::<syn::Path>(&with) {
+                let from_multipart_fn = match syn::parse_str::<syn::Path>(&with) {
                     Ok(p) => p,
                     Err(err) => {
                         return Err(err);
                     }
                 };
-                quote! { #path }
+                quote! { #from_multipart_fn ( multipart ) }
             }
             None => {
                 quote! {
-                    |f| <#field_ty as ::multer_derive::FromMultipartField>::from_field(f, &multipart)
+                    <#field_ty as ::multer_derive::FromMultipart>::from_multipart(
+                        multipart,
+                        ::multer_derive::FormContext {
+                            field_name: Some( stringify!(#field_name) ),
+                        },
+                    )?
                 }
             }
         };
 
         field_parsers.push(quote! {
-            let #original_name = multipart
-                .get_by_name(stringify!(#field_name))
-                .ok_or_else(|| ::multer_derive::Error::new(format!("`{}` form field was not found", stringify!(#field_name))))
-                .and_then(#parser)?;
+            let #original_name = #parser;
         });
     }
 
     let expanded = quote! {
         #[automatically_derived]
         impl #impl_generics ::multer_derive::FromMultipart for #name #ty_generics #where_clause {
-            fn from_multipart<'a>(multipart: ::multer_derive::MultipartForm) -> Result<Self, ::multer_derive::Error> {
+            fn from_multipart<'a>(multipart: &::multer_derive::MultipartForm, ctx: ::multer_derive::FormContext<'_>) -> Result<Self, ::multer_derive::Error> {
                 #(#field_parsers)*
 
                 Ok(Self {

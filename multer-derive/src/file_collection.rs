@@ -1,6 +1,6 @@
 use crate::{
-    error::Error, form_file::FormFile, from_multipart_field::FromMultipartField,
-    multipart_form::MultipartField, MultipartForm,
+    error::Error, form_file::FormFile, from_multipart_field::FromMultipartField, FromMultipart,
+    MultipartForm,
 };
 
 /// Provides a way to collect all the files in a `form`.
@@ -13,18 +13,19 @@ impl FileCollection {
     }
 }
 
-impl FromMultipartField for FileCollection {
-    fn from_field(_: &MultipartField, form: &MultipartForm) -> Result<Self, Error> {
+impl FromMultipart for FileCollection {
+    fn from_multipart(
+        multipart: &MultipartForm,
+        _: crate::from_multipart::FormContext<'_>,
+    ) -> Result<Self, Error> {
         let mut files = vec![];
 
-        // We get all the files that can be converted into `T`
-        for field in form.fields() {
+        for field in multipart.fields() {
             if field.file_name().is_none() {
                 continue;
             }
 
-            let file = FormFile::from_field(field, form)?;
-            files.push(file);
+            files.push(FormFile::from_field(field)?);
         }
 
         Ok(FileCollection(files))
