@@ -1,0 +1,18 @@
+warning: unused import: `Error`
+ --> tests/fail/multer_with_invalid_return.rs:1:21
+  |
+1 | use multer_derive::{Error, FromMultipart, MultipartForm, FormContext};
+  |                     ^^^^^
+  |
+  = note: `#[warn(unused_imports)]` on by default
+
+error[E0277]: `?` couldn't convert the error to `multer_derive::Error`
+ --> tests/fail/multer_with_invalid_return.rs:3:22
+  |
+3 | #[derive(FromMultipart)]
+  |                      ^ the trait `From<()>` is not implemented for `multer_derive::Error`
+  |
+  = note: the question mark operation (`?`) implicitly performs a conversion on the error value using the `From` trait
+  = help: the trait `From<multer_derive::multer::Error>` is implemented for `multer_derive::Error`
+  = note: required for `Result<MyStruct, multer_derive::Error>` to implement `FromResidual<Result<Infallible, ()>>`
+  = note: this error originates in the derive macro `FromMultipart` (in Nightly builds, run with -Z macro-backtrace for more info)

@@ -1,0 +1,7 @@
+error[E0425]: cannot find function `not_exists` in this scope
+ --> tests/fail/multer_with_no_exists.rs:3:10
+  |
+3 | #[derive(FromMultipart)]
+  |          ^^^^^^^^^^^^^ not found in this scope
+  |
+  = note: this error originates in the derive macro `FromMultipart` (in Nightly builds, run with -Z macro-backtrace for more info)

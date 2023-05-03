@@ -1,0 +1,15 @@
+error[E0308]: mismatched types
+  --> tests/fail/multer_with_invalid_params.rs:3:10
+   |
+3  | #[derive(FromMultipart)]
+   |          ^^^^^^^^^^^^^
+   |          |
+   |          expected `u32`, found `FormContext<'_>`
+   |          arguments to this function are incorrect
+   |
+note: function defined here
+  --> tests/fail/multer_with_invalid_params.rs:12:4
+   |
+12 | fn text_from_multipart(_multipart: &MultipartForm, _ctx: u32) -> Result<Text, Error> {
+   |    ^^^^^^^^^^^^^^^^^^^                             ---------
+   = note: this error originates in the derive macro `FromMultipart` (in Nightly builds, run with -Z macro-backtrace for more info)

@@ -1,5 +1,5 @@
 error: proc-macro derive panicked
- --> tests/fail/invalid_rename.rs:3:10
+ --> tests/fail/multer_rename_invalid_symbol.rs:3:10
   |
 3 | #[derive(FromMultipart)]
   |          ^^^^^^^^^^^^^
