@@ -63,7 +63,7 @@ impl MultipartField {
 
         let encoding = Encoding::for_label(encoding_name.as_bytes()).unwrap_or(encoding_rs::UTF_8);
         let bytes = self.bytes();
-        let (text, ..) = encoding.decode(&bytes);
+        let (text, ..) = encoding.decode(bytes);
 
         match text {
             Cow::Owned(s) => s,
@@ -122,9 +122,14 @@ impl MultipartForm {
     pub fn len(&self) -> usize {
         self.fields.len()
     }
+
+    /// Returns true if this form had no fields.
+    pub fn is_empty(&self) -> bool {
+        self.len() == 0
+    }
 }
 
-impl<'a> Index<usize> for MultipartForm {
+impl Index<usize> for MultipartForm {
     type Output = MultipartField;
 
     fn index(&self, index: usize) -> &Self::Output {

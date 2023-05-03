@@ -1,7 +1,5 @@
 use std::collections::HashMap;
-
-use proc_macro::TokenStream;
-use proc_macro2::Span;
+use proc_macro2::{Span, TokenStream};
 use quote::quote;
 use syn::{
     parse::{Parse, ParseStream},
@@ -83,7 +81,8 @@ pub fn derive_from_multipart(input: DeriveInput) -> syn::Result<TokenStream> {
         }
     };
 
-    Ok(TokenStream::from(expanded))
+    // return the tokens
+    Ok(expanded)
 }
 
 #[derive(Debug, Clone)]
