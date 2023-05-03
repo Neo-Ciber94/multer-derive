@@ -5,9 +5,10 @@ version = "0.1.0-alpha"
 edition = "2021"
 keywords = ["web", "multer", "derive", "form-data", "multipart"]
 license = "MIT"
+repository = "https://github.com/Neo-Ciber94/multer-derive"
 
 [dependencies]
-multer-derive-macros = { path = "../multer-derive-macros" }
+multer-derive-macros = { path = "../multer-derive-macros", version = "0.1.0-alpha" }
 multer = { version = "2.1.0", features = ["tokio-io"] }
 encoding_rs = "0.8.32"
 http = "0.2.9"

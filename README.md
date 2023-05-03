@@ -3,7 +3,7 @@
 [![CI-badge]](ci)
 
 [CI-badge]: https://github.com/Neo-Ciber94/multer-derive/actions/workflows/ci.yml/badge.svg
-[ci]: https://github.com/Neo-Ciber94/multer-derive/actions/workflows/ci.yml
+ci: <https://github.com/Neo-Ciber94/multer-derive/actions/workflows/ci.yml>
 
 Provides a `FromMultipart` derive for construct types from [multer::Multipart](https://docs.rs/multer/2.1.0/multer/struct.Multipart.html).
 
@@ -45,7 +45,7 @@ assert_eq!(str, "[Binary data]");
 - To rename the target you can use `#[multer(rename = "new_field_name")]`
   - This will make multer to parse the field using the given name.
 
-### Example
+Example:
 
 ```rs
 use multer_derive::FromMultipart;
@@ -67,7 +67,7 @@ struct MyStruct {
   }
   ```
 
-### Example
+Example:
 
 ```rs
 use multer_derive::{FromMultipart, MultipartForm, FormContext, Error};
