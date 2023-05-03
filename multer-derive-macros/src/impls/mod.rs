@@ -1,14 +1,24 @@
-use std::collections::HashMap;
 use proc_macro2::{Span, TokenStream};
 use quote::quote;
+use std::collections::HashMap;
 use syn::{
     parse::{Parse, ParseStream},
     punctuated::Punctuated,
     token::Comma,
-    Data, DeriveInput, Field, Fields, Ident,
+    Data, DeriveInput, Field, Fields, GenericParam, Ident,
 };
 
-pub fn derive_from_multipart(input: DeriveInput) -> syn::Result<TokenStream> {
+pub fn derive_from_multipart(mut input: DeriveInput) -> syn::Result<TokenStream> {
+    // We append generic bound to each generic
+    // impl<A: FromMultipart, B: FromMultipart> for #name 
+    for i in 0..input.generics.params.len() {
+        let generic = &mut input.generics.params[i];
+        if let GenericParam::Type(ref mut generic_ty) = generic {
+            let bound = syn::parse_str("::multer_derive::FromMultipart")?;
+            generic_ty.bounds.push(bound);
+        }
+    }
+
     let name = input.ident;
     let (impl_generics, ty_generics, where_clause) = input.generics.split_for_impl();
 

@@ -1,4 +1,5 @@
 use crate::{error::Error, multipart_form::MultipartField};
+use std::borrow::Cow;
 use std::str::FromStr;
 use std::{
     ffi::OsString,
@@ -50,6 +51,12 @@ where
         let key = K::from_str(name).map_err(Error::new)?;
         let value = V::from_field(field)?;
         Ok((key, value))
+    }
+}
+
+impl<T: FromMultipartField + Clone> FromMultipartField for Cow<'_, T> {
+    fn from_field(field: &MultipartField) -> Result<Self, Error> {
+        T::from_field(field).map(Cow::Owned)
     }
 }
 
