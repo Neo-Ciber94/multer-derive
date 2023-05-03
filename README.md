@@ -1,5 +1,10 @@
 # multer-derive
 
+[![CI-badge]](ci)
+
+[CI-badge]: https://github.com/Neo-Ciber94/multer-derive/actions/workflows/ci.yml/badge.svg
+[ci]: https://github.com/Neo-Ciber94/multer-derive/actions/workflows/ci.yml
+
 Provides a `FromMultipart` derive for construct types from [multer::Multipart](https://docs.rs/multer/2.1.0/multer/struct.Multipart.html).
 
 ## Usage

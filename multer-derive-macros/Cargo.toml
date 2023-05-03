@@ -4,6 +4,7 @@ description = "macros for multer-derive"
 version = "0.1.0-alpha"
 edition = "2021"
 keywords = ["web", "derive", "form-data", "multipart", "multer"]
+license = "MIT"
 
 [lib]
 crate-type = ["proc-macro"]

@@ -4,6 +4,7 @@ description = "Provides a derive for constructign type from multer Multipart"
 version = "0.1.0-alpha"
 edition = "2021"
 keywords = ["web", "multer", "derive", "form-data", "multipart"]
+license = "MIT"
 
 [dependencies]
 multer-derive-macros = { path = "../multer-derive-macros" }
