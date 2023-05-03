@@ -187,6 +187,12 @@ mod misc {
         }
     }
 
+    impl<'a, T> FromMultipartField for &'a PhantomData<T> {
+        fn from_field(_: &MultipartField) -> Result<Self, Error> {
+            Ok(&PhantomData)
+        }
+    }
+
     impl<T: FromMultipartField> FromMultipartField for Box<T> {
         fn from_field(field: &MultipartField) -> Result<Self, Error> {
             T::from_field(field).map(Box::new)

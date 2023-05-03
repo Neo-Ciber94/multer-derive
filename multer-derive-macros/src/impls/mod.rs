@@ -59,7 +59,7 @@ pub fn derive_from_multipart(mut input: DeriveInput) -> syn::Result<TokenStream>
                         return Err(err);
                     }
                 };
-                quote! { #from_multipart_fn ( multipart ) }
+                quote! { #from_multipart_fn ( multipart, ctx )? }
             }
             None => {
                 quote! {
