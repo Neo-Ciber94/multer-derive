@@ -3,6 +3,7 @@ use syn::DeriveInput;
 
 mod impls;
 
+/// Provide an implementation of `FromMultipart` for construct types from [`multer::Multipart`].
 #[proc_macro_derive(FromMultipart, attributes(multer))]
 pub fn derive_from_multipart(input: TokenStream) -> TokenStream {
     let input = syn::parse_macro_input!(input as DeriveInput);
