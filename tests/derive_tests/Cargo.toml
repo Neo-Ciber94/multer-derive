@@ -5,3 +5,6 @@ edition = "2021"
 
 [dependencies]
 multer-derive = { path = "../../multer-derive" }
+
+[dev-dependencies]
+tokio = { version = "1.28.0", features = ["rt", "macros"] }
