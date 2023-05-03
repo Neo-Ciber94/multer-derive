@@ -7,8 +7,9 @@ use std::{
     str::FromStr,
 };
 
-/// Allows to create a type from a `MultipartForm`.
+/// Allows to create a type from a [`multer::Multipart`].
 pub trait FromMultipart: Sized {
+    /// Constructs this type from the given multipart form.
     fn from_multipart(multipart: MultipartForm) -> Result<Self, Error>;
 }
 

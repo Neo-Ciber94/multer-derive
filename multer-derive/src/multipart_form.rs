@@ -53,7 +53,7 @@ impl MultipartField {
 
     /// Converts this field to a string using the given encoding.
     ///
-    /// Checkout: https://docs.rs/encoding_rs/latest/encoding_rs/struct.Encoding.html
+    /// Checkout: <https://docs.rs/encoding_rs/latest/encoding_rs/struct.Encoding.html>
     pub fn text_with_charset(&self, default_encoding: &str) -> String {
         let encoding_name = self
             .content_type()

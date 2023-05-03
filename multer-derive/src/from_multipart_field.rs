@@ -142,7 +142,6 @@ where
     }
 }
 
-#[macro_export]
 macro_rules! from_field_impls {
     ($($t:ty),*) => {
         $(

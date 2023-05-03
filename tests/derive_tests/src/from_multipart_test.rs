@@ -1,4 +1,4 @@
-use multer_derive::{FormFile, FromMultipart, Multipart, MultipartForm};
+use multer_derive::{multer::Multipart, FormFile, FromMultipart, MultipartForm};
 
 #[derive(FromMultipart)]
 struct Person {

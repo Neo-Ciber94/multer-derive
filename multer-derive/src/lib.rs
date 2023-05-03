@@ -1,3 +1,5 @@
+#[doc = include_str!("../../README.md")]
+
 mod error;
 pub use error::Error;
 
@@ -20,6 +22,6 @@ pub use multipart_form::{MultipartField, MultipartForm};
 pub use multer_derive_macros::FromMultipart;
 
 // Re-exports
-pub use http::header::*;
-pub use mime::*;
-pub use multer::*;
+pub use http::header;
+pub use mime;
+pub use multer;
