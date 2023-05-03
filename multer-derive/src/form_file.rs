@@ -1,4 +1,4 @@
-use crate::{error::Error, from_multipart_field::FormMultipartField, multipart_form::MultipartField, MultipartForm};
+use crate::{error::Error, from_multipart_field::FromMultipartField, multipart_form::MultipartField, MultipartForm};
 use http::HeaderMap;
 use mime::Mime;
 use multer::bytes::Bytes;
@@ -40,7 +40,7 @@ impl FormFile {
     }
 }
 
-impl FormMultipartField for FormFile {
+impl FromMultipartField for FormFile {
     fn from_field(field: &MultipartField, _form: &MultipartForm) -> Result<Self, Error> {
         let name = field
             .name()

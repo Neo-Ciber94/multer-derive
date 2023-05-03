@@ -1,5 +1,5 @@
 use crate::{
-    error::Error, form_file::FormFile, from_multipart_field::FormMultipartField,
+    error::Error, form_file::FormFile, from_multipart_field::FromMultipartField,
     multipart_form::MultipartField, MultipartForm,
 };
 
@@ -13,7 +13,7 @@ impl FileCollection {
     }
 }
 
-impl FormMultipartField for FileCollection {
+impl FromMultipartField for FileCollection {
     fn from_field(_: &MultipartField, form: &MultipartForm) -> Result<Self, Error> {
         let mut files = vec![];
 

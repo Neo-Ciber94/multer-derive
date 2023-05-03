@@ -15,7 +15,7 @@ use std::{
 };
 
 /// Allows to create a field from a [`multer::Field`].
-pub trait FormMultipartField: Sized {
+pub trait FromMultipartField: Sized {
     /// Parses the value of the given form field.
     /// 
     /// # Params
@@ -24,7 +24,7 @@ pub trait FormMultipartField: Sized {
     fn from_field(field: &MultipartField, form: &MultipartForm) -> Result<Self, Error>;
 }
 
-impl<T: FormMultipartField> FormMultipartField for Option<T> {
+impl<T: FromMultipartField> FromMultipartField for Option<T> {
     fn from_field(field: &MultipartField, form: &MultipartForm) -> Result<Self, Error> {
         match T::from_field(field, form) {
             Ok(x) => Ok(Some(x)),
@@ -33,9 +33,9 @@ impl<T: FormMultipartField> FormMultipartField for Option<T> {
     }
 }
 
-impl<T> FormMultipartField for Result<T, Error>
+impl<T> FromMultipartField for Result<T, Error>
 where
-    T: FormMultipartField,
+    T: FromMultipartField,
 {
     fn from_field(field: &MultipartField, form: &MultipartForm) -> Result<Self, Error> {
         match T::from_field(field, form) {
@@ -45,10 +45,10 @@ where
     }
 }
 
-impl<K, V> FormMultipartField for (K, V)
+impl<K, V> FromMultipartField for (K, V)
 where
     K: FromStr,
-    V: FormMultipartField,
+    V: FromMultipartField,
     K::Err: std::error::Error + Send + Sync + 'static,
 {
     fn from_field(field: &MultipartField, form: &MultipartForm) -> Result<Self, Error> {
@@ -61,7 +61,7 @@ where
     }
 }
 
-impl<T: FormMultipartField> FormMultipartField for Vec<T> {
+impl<T: FromMultipartField> FromMultipartField for Vec<T> {
     fn from_field(_: &MultipartField, form: &MultipartForm) -> Result<Self, Error> {
         let mut matches = vec![];
 
@@ -76,7 +76,7 @@ impl<T: FormMultipartField> FormMultipartField for Vec<T> {
     }
 }
 
-impl<T: FormMultipartField> FormMultipartField for VecDeque<T> {
+impl<T: FromMultipartField> FromMultipartField for VecDeque<T> {
     fn from_field(_: &MultipartField, form: &MultipartForm) -> Result<Self, Error> {
         let mut matches = VecDeque::new();
 
@@ -91,7 +91,7 @@ impl<T: FormMultipartField> FormMultipartField for VecDeque<T> {
     }
 }
 
-impl<T: FormMultipartField> FormMultipartField for LinkedList<T> {
+impl<T: FromMultipartField> FromMultipartField for LinkedList<T> {
     fn from_field(_: &MultipartField, form: &MultipartForm) -> Result<Self, Error> {
         let mut matches = LinkedList::new();
 
@@ -106,9 +106,9 @@ impl<T: FormMultipartField> FormMultipartField for LinkedList<T> {
     }
 }
 
-impl<T> FormMultipartField for BinaryHeap<T>
+impl<T> FromMultipartField for BinaryHeap<T>
 where
-    T: FormMultipartField + Ord,
+    T: FromMultipartField + Ord,
 {
     fn from_field(_: &MultipartField, form: &MultipartForm) -> Result<Self, Error> {
         let mut matches = BinaryHeap::new();
@@ -124,9 +124,9 @@ where
     }
 }
 
-impl<T> FormMultipartField for HashSet<T>
+impl<T> FromMultipartField for HashSet<T>
 where
-    T: FormMultipartField + Hash + Eq,
+    T: FromMultipartField + Hash + Eq,
 {
     fn from_field(_: &MultipartField, form: &MultipartForm) -> Result<Self, Error> {
         let mut matches = HashSet::new();
@@ -146,7 +146,7 @@ where
 macro_rules! from_field_impls {
     ($($t:ty),*) => {
         $(
-            impl FormMultipartField for $t {
+            impl FromMultipartField for $t {
                 fn from_field(field: &MultipartField, _form: &MultipartForm) -> Result<Self, Error> {
                     let text = field.text();
                     text.parse().map_err(Error::new)
@@ -186,10 +186,10 @@ from_field_impls!(
 
 #[cfg(feature = "time")]
 mod time {
-    use super::FormMultipartField;
+    use super::FromMultipartField;
     use crate::{error::Error, multipart_form::MultipartField, MultipartForm};
 
-    impl FormMultipartField for time::Time {
+    impl FromMultipartField for time::Time {
         fn from_field(field: &MultipartField, _form: &MultipartForm) -> Result<Self, Error> {
             let format =
                 time::macros::format_description!("[hour]:[minute]:[second].[subsecond digits:9]");
@@ -199,7 +199,7 @@ mod time {
         }
     }
 
-    impl FormMultipartField for time::Date {
+    impl FromMultipartField for time::Date {
         fn from_field(field: &MultipartField, _form: &MultipartForm) -> Result<Self, Error> {
             let format = time::macros::format_description!("[year]-[month]-[day]");
             let text = field.text();
@@ -208,7 +208,7 @@ mod time {
         }
     }
 
-    impl FormMultipartField for time::PrimitiveDateTime {
+    impl FromMultipartField for time::PrimitiveDateTime {
         fn from_field(field: &MultipartField, _form: &MultipartForm) -> Result<Self, Error> {
             let format = time::macros::format_description!(
                 "[year]-[month]-[day] [hour]:[minute]:[second].[subsecond digits:9]"
@@ -222,11 +222,11 @@ mod time {
 
 #[cfg(feature = "uuid")]
 mod uuid {
-    use super::FormMultipartField;
+    use super::FromMultipartField;
     use crate::{error::Error, multipart_form::MultipartField, MultipartForm};
     use uuid::Uuid;
 
-    impl FormMultipartField for Uuid {
+    impl FromMultipartField for Uuid {
         fn from_field(field: &MultipartField, _form: &MultipartForm) -> Result<Self, Error> {
             let text = field.text();
             text.parse().map_err(Error::new)
@@ -236,10 +236,10 @@ mod uuid {
 
 #[cfg(feature = "json")]
 mod json {
-    use super::FormMultipartField;
+    use super::FromMultipartField;
     use crate::{error::Error, multipart_form::MultipartField, MultipartForm};
 
-    impl FormMultipartField for serde_json::Value {
+    impl FromMultipartField for serde_json::Value {
         fn from_field(field: &MultipartField, _form: &MultipartForm) -> Result<Self, Error> {
             let text = field.text();
             serde_json::to_value(&text).map_err(Error::new)
@@ -256,63 +256,63 @@ mod misc {
         sync::{Arc, Mutex, RwLock},
     };
 
-    use crate::{Error, FormMultipartField, MultipartField, MultipartForm};
+    use crate::{Error, FromMultipartField, MultipartField, MultipartForm};
 
-    impl FormMultipartField for () {
+    impl FromMultipartField for () {
         fn from_field(_: &MultipartField, _form: &MultipartForm) -> Result<Self, Error> {
             Ok(())
         }
     }
 
-    impl<T> FormMultipartField for PhantomData<T> {
+    impl<T> FromMultipartField for PhantomData<T> {
         fn from_field(_: &MultipartField, _form: &MultipartForm) -> Result<Self, Error> {
             Ok(PhantomData)
         }
     }
 
-    impl<T: FormMultipartField> FormMultipartField for Box<T> {
+    impl<T: FromMultipartField> FromMultipartField for Box<T> {
         fn from_field(field: &MultipartField, form: &MultipartForm) -> Result<Self, Error> {
             T::from_field(field, form).map(Box::new)
         }
     }
 
-    impl<T: FormMultipartField> FormMultipartField for Rc<T> {
+    impl<T: FromMultipartField> FromMultipartField for Rc<T> {
         fn from_field(field: &MultipartField, form: &MultipartForm) -> Result<Self, Error> {
             T::from_field(field, form).map(Rc::new)
         }
     }
 
-    impl<T: FormMultipartField> FormMultipartField for Arc<T> {
+    impl<T: FromMultipartField> FromMultipartField for Arc<T> {
         fn from_field(field: &MultipartField, form: &MultipartForm) -> Result<Self, Error> {
             T::from_field(field, form).map(Arc::new)
         }
     }
 
-    impl<T: FormMultipartField> FormMultipartField for Cell<T> {
+    impl<T: FromMultipartField> FromMultipartField for Cell<T> {
         fn from_field(field: &MultipartField, form: &MultipartForm) -> Result<Self, Error> {
             T::from_field(field, form).map(Cell::new)
         }
     }
 
-    impl<T: FormMultipartField> FormMultipartField for RefCell<T> {
+    impl<T: FromMultipartField> FromMultipartField for RefCell<T> {
         fn from_field(field: &MultipartField, form: &MultipartForm) -> Result<Self, Error> {
             T::from_field(field, form).map(RefCell::new)
         }
     }
 
-    impl<T: FormMultipartField> FormMultipartField for Mutex<T> {
+    impl<T: FromMultipartField> FromMultipartField for Mutex<T> {
         fn from_field(field: &MultipartField, form: &MultipartForm) -> Result<Self, Error> {
             T::from_field(field, form).map(Mutex::new)
         }
     }
 
-    impl<T: FormMultipartField> FormMultipartField for RwLock<T> {
+    impl<T: FromMultipartField> FromMultipartField for RwLock<T> {
         fn from_field(field: &MultipartField, form: &MultipartForm) -> Result<Self, Error> {
             T::from_field(field, form).map(RwLock::new)
         }
     }
 
-    impl<T: FormMultipartField> FormMultipartField for Wrapping<T> {
+    impl<T: FromMultipartField> FromMultipartField for Wrapping<T> {
         fn from_field(field: &MultipartField, form: &MultipartForm) -> Result<Self, Error> {
             T::from_field(field, form).map(Wrapping)
         }
@@ -320,13 +320,13 @@ mod misc {
 }
 
 mod atomics {
-    use crate::{Error, FormMultipartField, MultipartField, MultipartForm};
+    use crate::{Error, FromMultipartField, MultipartField, MultipartForm};
     use std::sync::atomic::*;
 
     macro_rules! impl_atomic_field {
         ($($atomic:ident),*) => {
             $(
-                impl FormMultipartField for $atomic {
+                impl FromMultipartField for $atomic {
                     fn from_field(field: &MultipartField, _form: &MultipartForm) -> Result<Self, Error> {
                         let text = field.text();
                         let value = text.parse().map_err(Error::new)?;

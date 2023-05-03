@@ -11,12 +11,15 @@ mod from_multipart;
 pub use from_multipart::FromMultipart;
 
 mod from_multipart_field;
-pub use from_multipart_field::FormMultipartField;
+pub use from_multipart_field::FromMultipartField;
 
 mod multipart_form;
 pub use multipart_form::{MultipartField, MultipartForm};
 
+// Macro
+pub use multer_derive_macros::FromMultipart;
+
 // Re-exports
-pub use multer::*;
-pub use mime::*;
 pub use http::header::*;
+pub use mime::*;
+pub use multer::*;

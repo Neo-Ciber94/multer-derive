@@ -1,5 +1,5 @@
 use crate::{
-    error::Error, from_multipart_field::FormMultipartField, multipart_form::MultipartForm,
+    error::Error, from_multipart_field::FromMultipartField, multipart_form::MultipartForm,
 };
 use std::{
     collections::{BTreeMap, HashMap},
@@ -15,7 +15,7 @@ pub trait FromMultipart: Sized {
 impl<K, V> FromMultipart for HashMap<K, V>
 where
     K: FromStr + Hash + Eq + Send,
-    V: FormMultipartField + Send,
+    V: FromMultipartField + Send,
     K::Err: std::error::Error + Send + Sync + 'static,
 {
     fn from_multipart(multipart: MultipartForm) -> Result<Self, Error> {
@@ -38,7 +38,7 @@ where
 impl<K, V> FromMultipart for BTreeMap<K, V>
 where
     K: FromStr + Ord + Send,
-    V: FormMultipartField + Send,
+    V: FromMultipartField + Send,
     K::Err: std::error::Error + Send + Sync + 'static,
 {
     fn from_multipart(multipart: MultipartForm) -> Result<Self, Error> {
@@ -77,27 +77,27 @@ mod tests {
             let name = multipart
                 .get_by_name("name")
                 .ok_or_else(|| crate::Error::new(format!("`name` field was not found")))
-                .and_then(|f| <String as crate::FormMultipartField>::from_field(f, &multipart))?;
+                .and_then(|f| <String as crate::FromMultipartField>::from_field(f, &multipart))?;
 
             let email = multipart
                 .get_by_name("email")
                 .ok_or_else(|| crate::Error::new(format!("`email` form field was not found")))
-                .and_then(|f| <String as crate::FormMultipartField>::from_field(f, &multipart))?;
+                .and_then(|f| <String as crate::FromMultipartField>::from_field(f, &multipart))?;
 
             let age = multipart
                 .get_by_name("age")
                 .ok_or_else(|| crate::Error::new(format!("`age` form field was not found")))
-                .and_then(|f| <u8 as crate::FormMultipartField>::from_field(f, &multipart))?;
+                .and_then(|f| <u8 as crate::FromMultipartField>::from_field(f, &multipart))?;
 
             let married = multipart
                 .get_by_name("married")
                 .ok_or_else(|| crate::Error::new(format!("`married` form field was not found")))
-                .and_then(|f| <bool as crate::FormMultipartField>::from_field(f, &multipart))?;
+                .and_then(|f| <bool as crate::FromMultipartField>::from_field(f, &multipart))?;
 
             let photo = multipart
                 .get_by_name("photo")
                 .ok_or_else(|| crate::Error::new(format!("`photo` form field was not found")))
-                .and_then(|f| <FormFile as crate::FormMultipartField>::from_field(f, &multipart))?;
+                .and_then(|f| <FormFile as crate::FromMultipartField>::from_field(f, &multipart))?;
 
             Ok(Self {
                 name,
