@@ -37,3 +37,65 @@ assert_eq!(person.married, true);
 let str = String::from_utf8(person.photo.bytes().to_vec()).unwrap();
 assert_eq!(str, "[Binary data]");
 ```
+
+## Attributes
+
+`multer-derive` also support the next attributes to decorate your fields:
+
+- To rename the target you can use `#[multer(rename = "new_field_name")]`
+  - This will make multer to parse the field using the given name.
+
+### Example
+
+```rs
+use multer_derive::FromMultipart;
+
+#[derive(FromMultipart)]
+struct MyStruct {
+    #[multer(rename = "active")]
+    is_active: bool
+}
+```
+
+- To parse using a function you can use `#[multer(with = "path::to::function")]`
+
+  - For this you should provide a function with the signature:
+
+  ```rs
+  fn from_multipart(multipart: &MultipartForm, ctx: FormContext<'_>) -> Result<YourType, Error> {
+    todo!()
+  }
+  ```
+
+### Example
+
+```rs
+use multer_derive::{FromMultipart, MultipartForm, FormContext, Error};
+
+#[derive(FromMultipart)]
+struct MyStruct {
+    #[multer(with = "text_from_multipart")]
+    name: Text
+}
+
+struct Text(String);
+
+fn text_from_multipart(
+    multipart: &MultipartForm,
+    ctx: FormContext<'_>,
+) -> Result<Text, Error> {
+    // This is safe, the `field_name` is always passed
+    let field_name = ctx.field_name.unwrap();
+
+    // We search the field in the source multipart
+    let field = multipart
+        .get_by_name(field_name)
+        .ok_or(Error::new(format!(
+            "`{field_name}` form field was not found"
+        )))?;
+
+    // Parse the value using `String`
+    let s = String::from_field(field)?;
+    Ok(Text(s))
+}
+```
