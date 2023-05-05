@@ -364,23 +364,92 @@ mod tests {
     }
 
     #[test]
-    fn test_build() {
+    fn test_build_only_text() {
         let mut builder = MultipartFormBuilder::new();
         builder.text("username", "john_doe");
-        builder.raw_file(
-            "file",
-            vec![0, 1, 2],
-            "file.bin",
-            mime::APPLICATION_OCTET_STREAM,
+        let result = builder.build("my_boundary");
+
+        let expected = format!(
+            "--my_boundary\r\n\
+             Content-Disposition: form-data; name=\"username\"\r\n\r\n\
+             john_doe\r\n\
+             --my_boundary--\r\n"
         );
 
-        let form_data = builder.build("my_boundary");
+        assert_eq!(result, expected);
+    }
 
-        assert_eq!(
-            form_data,
-            format!(
-                "--my_boundary\r\nContent-Disposition: form-data; name=\"username\"\r\n\r\njohn_doe\r\n--my_boundary\r\nContent-Disposition: form-data; name=\"file\"; filename=\"file.bin\"\r\nContent-Type: application/octet-stream\r\n\r\n\u{0}\u{1}\u{2}\r\n--my_boundary--\r\n"
-            )
+    #[test]
+    fn test_build_text_with_file() {
+        let mut builder = MultipartFormBuilder::new();
+        builder.text("username", "john_doe").raw_file(
+            "avatar",
+            &[0x01, 0x02, 0x03],
+            "avatar.png",
+            mime::IMAGE_PNG,
         );
+        let result = builder.build("my_boundary");
+
+        let expected = format!(
+            "--my_boundary\r\n\
+             Content-Disposition: form-data; name=\"username\"\r\n\r\n\
+             john_doe\r\n\
+             --my_boundary\r\n\
+             Content-Disposition: form-data; name=\"avatar\"; filename=\"avatar.png\"\r\n\
+             Content-Type: image/png\r\n\r\n\
+             \u{01}\u{02}\u{03}\r\n\
+             --my_boundary--\r\n"
+        );
+
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn test_build_text_with_multiple_files() {
+        let mut builder = MultipartFormBuilder::new();
+        builder
+            .text("username", "john_doe")
+            .raw_file("avatar", &[0x01, 0x02, 0x03], "avatar.png", mime::IMAGE_PNG)
+            .raw_file(
+                "background",
+                &[0x04, 0x05, 0x06],
+                "background.png",
+                mime::IMAGE_PNG,
+            );
+        let result = builder.build("my_boundary");
+
+        let expected = format!(
+            "--my_boundary\r\n\
+             Content-Disposition: form-data; name=\"username\"\r\n\r\n\
+             john_doe\r\n\
+             --my_boundary\r\n\
+             Content-Disposition: form-data; name=\"avatar\"; filename=\"avatar.png\"\r\n\
+             Content-Type: image/png\r\n\r\n\
+             \u{01}\u{02}\u{03}\r\n\
+             --my_boundary\r\n\
+             Content-Disposition: form-data; name=\"background\"; filename=\"background.png\"\r\n\
+             Content-Type: image/png\r\n\r\n\
+             \u{04}\u{05}\u{06}\r\n\
+             --my_boundary--\r\n"
+        );
+
+        assert_eq!(result, expected);
+    }
+
+    #[test]
+    fn test_build_only_file() {
+        let mut builder = MultipartFormBuilder::new();
+        builder.raw_file("avatar", &[0x01, 0x02, 0x03], "avatar.png", mime::IMAGE_PNG);
+        let result = builder.build("my_boundary");
+
+        let expected = format!(
+            "--my_boundary\r\n\
+             Content-Disposition: form-data; name=\"avatar\"; filename=\"avatar.png\"\r\n\
+             Content-Type: image/png\r\n\r\n\
+             \u{01}\u{02}\u{03}\r\n\
+             --my_boundary--\r\n"
+        );
+
+        assert_eq!(result, expected);
     }
 }
