@@ -16,12 +16,16 @@ impl FileCollection {
 impl FromMultipart for FileCollection {
     fn from_multipart(
         multipart: &MultipartForm,
-        _: crate::from_multipart::FormContext<'_>,
+        ctx: crate::from_multipart::FormContext<'_>,
     ) -> Result<Self, Error> {
         let mut files = vec![];
 
         for field in multipart.fields() {
             if field.file_name().is_none() {
+                continue;
+            }
+
+            if ctx.field_name.is_some() && ctx.field_name != field.name() {
                 continue;
             }
 

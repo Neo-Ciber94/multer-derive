@@ -25,3 +25,7 @@ pub use multer_derive_macros::FromMultipart;
 pub use http::header;
 pub use mime;
 pub use multer;
+
+/// Helpers for creating multipart forms.
+#[cfg(feature = "helpers")]
+pub mod helpers;

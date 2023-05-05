@@ -1,4 +1,4 @@
-use proc_macro2::{Span, TokenStream};
+use proc_macro2::TokenStream;
 use quote::quote;
 use std::collections::HashMap;
 use syn::{
@@ -10,7 +10,7 @@ use syn::{
 
 pub fn derive_from_multipart(mut input: DeriveInput) -> syn::Result<TokenStream> {
     // We append generic bound to each generic
-    // impl<A: FromMultipart, B: FromMultipart> for #name 
+    // impl<A: FromMultipart, B: FromMultipart> for #name
     for i in 0..input.generics.params.len() {
         let generic = &mut input.generics.params[i];
         if let GenericParam::Type(ref mut generic_ty) = generic {
@@ -44,11 +44,10 @@ pub fn derive_from_multipart(mut input: DeriveInput) -> syn::Result<TokenStream>
         let original_name = f.ident.as_ref().unwrap();
         let name_str = original_name.to_string();
         let attr = field_attrs.get(&name_str).cloned();
-        let field_name = attr
+        let field_name_str = attr
             .clone()
             .and_then(|attr| attr.rename)
-            .map(|s| Ident::new(&s, Span::call_site()))
-            .unwrap_or(original_name.clone());
+            .unwrap_or_else(|| original_name.to_string().clone());
 
         let field_ty = f.ty;
         let parser = match attr.and_then(|s| s.with) {
@@ -59,15 +58,15 @@ pub fn derive_from_multipart(mut input: DeriveInput) -> syn::Result<TokenStream>
                         return Err(err);
                     }
                 };
-                
-                quote! { #from_multipart_fn ( multipart, ::multer_derive::FormContext { field_name: Some(stringify!(#field_name)) } )? }
+
+                quote! { #from_multipart_fn ( multipart, ::multer_derive::FormContext { field_name: Some( #field_name_str ) } )? }
             }
             None => {
                 quote! {
                     <#field_ty as ::multer_derive::FromMultipart>::from_multipart(
                         multipart,
                         ::multer_derive::FormContext {
-                            field_name: Some( stringify!(#field_name) ),
+                            field_name: Some( #field_name_str ),
                         },
                     )?
                 }

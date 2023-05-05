@@ -8,7 +8,7 @@ use std::{
 };
 
 /// Additional information for parsing a multipart form.
-#[derive(Default, Debug)]
+#[derive(Default, Clone, Debug)]
 pub struct FormContext<'a> {
     /// The name of the field being parsed, if any.
     pub field_name: Option<&'a str>,
@@ -81,50 +81,65 @@ where
 }
 
 impl<T: FromMultipartField> FromMultipart for Vec<T> {
-    fn from_multipart(multipart: &MultipartForm, _ctx: FormContext<'_>) -> Result<Self, Error> {
+    fn from_multipart(multipart: &MultipartForm, ctx: FormContext<'_>) -> Result<Self, Error> {
+        let name = ctx.field_name;
+
         Ok(multipart
             .fields()
             .iter()
+            .filter(|f| name.is_none() || name == f.name())
             .filter_map(|f| T::from_field(f).ok())
             .collect())
     }
 }
 
 impl<T: FromMultipartField> FromMultipart for VecDeque<T> {
-    fn from_multipart(multipart: &MultipartForm, _ctx: FormContext<'_>) -> Result<Self, Error> {
+    fn from_multipart(multipart: &MultipartForm, ctx: FormContext<'_>) -> Result<Self, Error> {
+        let name = ctx.field_name;
+
         Ok(multipart
             .fields()
             .iter()
+            .filter(|f| name.is_none() || name == f.name())
             .filter_map(|f| T::from_field(f).ok())
             .collect())
     }
 }
 
 impl<T: FromMultipartField> FromMultipart for LinkedList<T> {
-    fn from_multipart(multipart: &MultipartForm, _ctx: FormContext<'_>) -> Result<Self, Error> {
+    fn from_multipart(multipart: &MultipartForm, ctx: FormContext<'_>) -> Result<Self, Error> {
+        let name = ctx.field_name;
+
         Ok(multipart
             .fields()
             .iter()
+            .filter(|f| name.is_none() || name == f.name())
             .filter_map(|f| T::from_field(f).ok())
             .collect())
     }
 }
 
 impl<T: FromMultipartField + Hash + Eq> FromMultipart for HashSet<T> {
-    fn from_multipart(multipart: &MultipartForm, _ctx: FormContext<'_>) -> Result<Self, Error> {
+    fn from_multipart(multipart: &MultipartForm, ctx: FormContext<'_>) -> Result<Self, Error> {
+        let name = ctx.field_name;
+
         Ok(multipart
             .fields()
             .iter()
+            .filter(|f| name.is_none() || name == f.name())
             .filter_map(|f| T::from_field(f).ok())
             .collect())
     }
 }
 
 impl<T: FromMultipartField + Ord> FromMultipart for BinaryHeap<T> {
-    fn from_multipart(multipart: &MultipartForm, _ctx: FormContext<'_>) -> Result<Self, Error> {
+    fn from_multipart(multipart: &MultipartForm, ctx: FormContext<'_>) -> Result<Self, Error> {
+        let name = ctx.field_name;
+
         Ok(multipart
             .fields()
             .iter()
+            .filter(|f| name.is_none() || name == f.name())
             .filter_map(|f| T::from_field(f).ok())
             .collect())
     }
