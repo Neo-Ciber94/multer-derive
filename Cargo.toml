@@ -1,7 +1,7 @@
 [package]
 name = "multer-derive"
 description = "Provides a derive for constructign type from multer Multipart"
-version = "0.1.0-alpha"
+version = "0.1.1-alpha"
 edition = "2021"
 keywords = ["web", "multer", "derive", "form-data", "multipart"]
 license = "MIT"
