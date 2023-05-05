@@ -8,8 +8,8 @@
 [Latest Version]: https://img.shields.io/crates/v/multer-derive.svg
 [crates.io]: https://crates.io/crates/rust-decimal
 
-[Docs Badge]: https://docs.rs/multer_derive/badge.svg
-[docs]: https://docs.rs/multer_derive
+[Docs Badge]: https://docs.rs/multer-derive/badge.svg
+[docs]: https://docs.rs/multer-derive/latest
 
 Provides a `FromMultipart` derive for construct types from [multer::Multipart](https://docs.rs/multer/2.1.0/multer/struct.Multipart.html).
 
