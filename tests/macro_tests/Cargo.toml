@@ -6,5 +6,5 @@ edition = "2021"
 [dependencies]
 
 [dev-dependencies]
-multer-derive = { path = "../../multer-derive" }
+multer-derive = { path = "../../" }
 trybuild = { version = "1.0.80", features = ["diff"] }

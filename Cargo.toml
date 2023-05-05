@@ -1,2 +1,39 @@
+[package]
+name = "multer-derive"
+description = "Provides a derive for constructign type from multer Multipart"
+version = "0.1.0-alpha"
+edition = "2021"
+keywords = ["web", "multer", "derive", "form-data", "multipart"]
+license = "MIT"
+repository = "https://github.com/Neo-Ciber94/multer-derive"
+
+[dependencies]
+multer-derive-macros = { path = "./macros", version = "0.1.0-alpha" }
+multer = { version = "2.1.0", features = ["tokio-io"] }
+encoding_rs = "0.8.32"
+http = "0.2.9"
+mime = "0.3.17"
+serde_json = { version = "1.0.96", optional = true }
+thiserror = "1.0.40"
+time = { version = "0.3.20", optional = true, features = [
+    "parsing",
+    "macros",
+    "formatting",
+] }
+uuid = { version = "1.3.2", optional = true }
+mime_guess = { version = "2.0.4", optional = true }
+indexmap = { version = "1.9.3", optional = true }
+
+[features]
+time = ["dep:time"]
+uuid = ["dep:uuid"]
+json = ["dep:serde_json"]
+helpers = ["mime_guess", "indexmap"]
+
+[dev-dependencies]
+tempfile = "3.5.0"
+tokio = { version = "1.28.0", features = ["rt", "macros"] }
+
+
 [workspace]
-members = ["multer-derive", "multer-derive-macros", "tests/*"]
+members = ["macros", "tests/*"]
